@@ -10,7 +10,31 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_26_011032) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_26_030438) do
+  create_table "likes", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "tweet_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tweet_id"], name: "index_likes_on_tweet_id"
+    t.index ["user_id"], name: "index_likes_on_user_id"
+  end
+
+  create_table "tags", charset: "utf8mb3", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "tweet_tags", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "tweet_id", null: false
+    t.bigint "tag_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tag_id"], name: "index_tweet_tags_on_tag_id"
+    t.index ["tweet_id"], name: "index_tweet_tags_on_tweet_id"
+  end
+
   create_table "tweets", charset: "utf8mb3", force: :cascade do |t|
     t.string "text"
     t.bigint "user_id", null: false
@@ -26,5 +50,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_26_011032) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "likes", "tweets"
+  add_foreign_key "likes", "users"
+  add_foreign_key "tweet_tags", "tags"
+  add_foreign_key "tweet_tags", "tweets"
   add_foreign_key "tweets", "users"
 end
