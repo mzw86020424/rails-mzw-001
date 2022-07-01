@@ -11,7 +11,7 @@ class Api::V1::TweetTagsController < ApplicationController
     else
         render json: {
             status: "ERROR",
-            data: tweet_tag.error
+            data: tweet_tag.errors
         }
     end
   end

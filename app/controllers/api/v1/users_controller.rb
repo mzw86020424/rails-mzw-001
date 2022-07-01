@@ -1,25 +1,48 @@
 class Api::V1::UsersController < ApplicationController
+    before_action :set_user
+
     def create
-        user = User.new(name: params[:name], email: params[:email])
+        user = User.new(user_params)
         if user.save
-            render json: {
-                status: "SUCCESS",
-                data: user
-            }
+            render json: user
         else
-            render json: {
-                status: "ERROR",
-                data: user.error
-            }
+            render json: user.errors
         end
     end
 
-    def like_tweets
-        user = User.find(params[:user_id])
-        render json: {
-            status:'SUCCESS',
-            data: user.like_tweets
-        }
+    def update
+        @user.update!(user_params)
+        render json: @user
     end
-    
+
+    def destroy
+        User.all.eager_load(tweets: :tweet_tags).find(@user.id).delete_all
+        render json: @user
+    end
+
+    def tweets
+        render json: @user.tweets
+    end
+
+    def like_tweets
+        render json: @user.like_tweets
+    end
+
+    def like_tweet_tags
+        render json: @user.like_tweet_tags
+    end
+
+    def status_tweets
+        render json: @user.status_tweets(params[:status])
+    end
+
+    private
+
+    def set_user
+        @user = User.find(params[:id])
+    end
+
+    def user_params
+        params.permit(:name, :email)
+    end
 end

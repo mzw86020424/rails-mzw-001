@@ -11,7 +11,7 @@ class Api::V1::LikesController < ApplicationController
         else
             render json: {
                 status: "ERROR",
-                data: like.error
+                data: like.errors
             }
         end
     end
@@ -26,7 +26,7 @@ class Api::V1::LikesController < ApplicationController
         else
             render json: {
                 status: "ERROR",
-                data: like.error
+                data: like.errors
             }
         end
     end
