@@ -1,5 +1,5 @@
 class Api::V1::UsersController < ApplicationController
-    before_action :set_user
+    before_action :set_user, except: [:create]
 
     def create
         user = User.new(user_params)
@@ -16,7 +16,8 @@ class Api::V1::UsersController < ApplicationController
     end
 
     def destroy
-        User.all.eager_load(tweets: :tweet_tags).find(@user.id).delete_all
+        user = User.all.eager_load(tweets: :tweet_tags).find(@user.id)
+        user.destroy
         render json: @user
     end
 
@@ -39,7 +40,8 @@ class Api::V1::UsersController < ApplicationController
     private
 
     def set_user
-        @user = User.find(params[:id])
+        id = params[:user_id] || params[:id]
+        @user = User.find(id)
     end
 
     def user_params

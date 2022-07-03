@@ -1,13 +1,29 @@
 class User < ApplicationRecord
+    # アソシエーション
     has_many :tweets, dependent: :destroy
     has_many :likes, dependent: :destroy
     has_many :like_tweets, through: :likes, source: :tweet
 
+    # バリデーション
     with_options presence: true do
         validates :name
         validates :email
     end
+    validates :email, uniqueness: true
 
+    # コールバック
+    before_save do
+        self.name = name.capitalize # self->インスタンスを指している
+    end
+    before_validation :add_user_length, if: :short_name?
+    def add_user_length
+        self.name = self.name + "hogehoge"
+    end
+    def short_name?
+        self.name.length < 4
+    end
+
+    # インスタンスメソッド
     def like_tweet_tags
         like_tweet_tags = []
         users = User.eager_load(tweets: :tags).where(tweets: {user_id: self.id})
@@ -22,12 +38,11 @@ class User < ApplicationRecord
         end
         like_tweet_tags
     end
-
     def status_tweets(status)
         Tweet.all.where(user_id: self.id, status: status)
     end
 
-
+    # クラスメソッド
     class << self
         def test_1
             users = User.all
