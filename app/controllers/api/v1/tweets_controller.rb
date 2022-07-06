@@ -7,7 +7,7 @@ class Api::V1::TweetsController < ApplicationController
         Tweet.serialize :liked_by_me
         Tweet.serialize :like_count
 
-        tweets = Tweet.eager_load(:likes).each do |tweet|
+        tweets = Tweet.eager_load(:likes).order(id: :desc).each do |tweet|
             tweet.liked_by_me = tweet.likes { |like| like.user_id == user_id}.count > 0
             tweet.like_count = tweet.likes.count
         end
