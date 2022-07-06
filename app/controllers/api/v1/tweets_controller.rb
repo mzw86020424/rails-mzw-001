@@ -1,9 +1,14 @@
 class Api::V1::TweetsController < ApplicationController
-    before_action :set_tweet, only: [:update, :destroy, :like_users, :tags, :likes]
+    before_action :set_tweet, only: [:update, :destroy, :like_users, :tags, :likes, :show]
 
     def index
         # like数を数えたものを追加
         render json: Tweet.joins(:likes).select('tweets.id, tweets.user_id, text, count(likes.id) AS like_count').group("tweets.id")
+    end
+
+    def show
+        # like数を数えたものを追加
+        render json: Tweet.joins(:likes).select('tweets.id, tweets.user_id, text, count(likes.id) AS like_count').group("tweets.id").find(@tweet.id)
     end
 
     def create
@@ -17,8 +22,11 @@ class Api::V1::TweetsController < ApplicationController
     end
 
     def update
-        @tweet.update(text: params[:text])
-        render json: @tweet
+        if @tweet.update(text: params[:text])
+            render json: @tweet
+        else
+            render json: @tweet.errors
+        end
     end
     
 

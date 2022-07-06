@@ -1,7 +1,7 @@
 class Api::V1::LikesController < ApplicationController
     def create
         tweet = Tweet.find(params[:tweet_id])
-        like = tweet.likes.new(user_id: tweet.user_id, tweet_id: tweet.id)
+        like = tweet.likes.new(user_id: params[:user_id], tweet_id: tweet.id)
         if like.save
             render json: {
                 status: "SUCCESS",

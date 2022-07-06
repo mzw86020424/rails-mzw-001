@@ -4,7 +4,7 @@ module Visible
     VALID_STATUSES = ['public', 'private', 'archived']
 
     included do
-        validates :status, inclusion: { in: VALID_STATUSES, message: "%{value} is unvalid"}
+        # validates :status, inclusion: { in: VALID_STATUSES, message: "%{value} is unvalid"}
     end
 
     class_methods do
