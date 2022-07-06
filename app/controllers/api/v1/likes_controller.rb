@@ -21,7 +21,9 @@ class Api::V1::LikesController < ApplicationController
     end
 
     def destroy
-        like = Like.find_by(user_id: params[:user_id], tweet_id: params[:tweet_id])
+        like = Like.find_by_user_id_and_tweet_id(params[:user_id], params[:tweet_id])
+        # like = Like.find_by(user_id: params[:user_id], tweet_id: params[:tweet_id])
+
         if like.destroy
             render json: {
                 status: "SUCCESS",

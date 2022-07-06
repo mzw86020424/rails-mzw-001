@@ -13,12 +13,15 @@ class User < ApplicationRecord
 
     # コールバック
     before_save do
-        self.name = name.capitalize # self->インスタンスを指している
+        self.name = self.name.capitalize # self->インスタンスを指している
     end
+
     before_validation :add_user_length, if: :short_name?
+
     def add_user_length
         self.name = self.name + "hogehoge"
     end
+
     def short_name?
         self.name.length < 4
     end

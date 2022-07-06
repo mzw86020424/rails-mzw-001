@@ -2,13 +2,27 @@ class Api::V1::TweetsController < ApplicationController
     before_action :set_tweet, only: [:update, :destroy, :like_users, :tags, :likes, :show]
 
     def index
+        user_id = 2
         # like数を数えたものを追加
-        render json: Tweet.joins(:likes).select('tweets.id, tweets.user_id, text, count(likes.id) AS like_count').group("tweets.id")
+        Tweet.serialize :liked_by_me
+        Tweet.serialize :like_count
+
+        tweets = Tweet.eager_load(:likes).each do |tweet|
+            tweet.liked_by_me = tweet.likes { |like| like.user_id == user_id}.count > 0
+            tweet.like_count = tweet.likes.count
+        end
+        render json: tweets
     end
 
     def show
         # like数を数えたものを追加
-        render json: Tweet.joins(:likes).select('tweets.id, tweets.user_id, text, count(likes.id) AS like_count').group("tweets.id").find(@tweet.id)
+        Tweet.serialize :liked_by_me
+        Tweet.serialize :like_count
+
+        tweet = Tweet.eager_load(:likes).find(@tweet.id)
+        tweet.liked_by_me = tweet.likes { |like| like.user_id == user_id}.count > 0
+        tweet.like_count = tweet.likes.count
+        render json: tweet
     end
 
     def create
@@ -28,7 +42,6 @@ class Api::V1::TweetsController < ApplicationController
             render json: @tweet.errors
         end
     end
-    
 
     def destroy
         @tweet.destroy
