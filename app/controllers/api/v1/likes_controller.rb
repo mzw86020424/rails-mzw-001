@@ -1,4 +1,5 @@
 class Api::V1::LikesController < ApplicationController
+    before_action: :authenticate_user!
     def create
         tweet = Tweet.find(params[:tweet_id])
         like = tweet.likes.new(user_id: params[:user_id], tweet_id: tweet.id)

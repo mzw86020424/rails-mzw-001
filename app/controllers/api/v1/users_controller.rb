@@ -1,6 +1,5 @@
 class Api::V1::UsersController < ApplicationController
-    before_action :set_user, except: [:create]
-
+    before_action :authenticate_user!, :set_user, except: [:create]
     def create
         user = User.new(user_params)
         if user.save

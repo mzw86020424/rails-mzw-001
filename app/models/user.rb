@@ -1,8 +1,8 @@
 class User < ApplicationRecord
     # Include default devise modules.
     devise :database_authenticatable, :registerable,
-            :recoverable, :rememberable, :trackable, :validatable,
-            :confirmable, :omniauthable
+            :recoverable, :rememberable, :validatable, :omniauthable
+            # :confirmable,  :trackable # 認証メール不要にするためコメントアウト
     include DeviseTokenAuth::Concerns::User
 
     # アソシエーション
@@ -11,26 +11,26 @@ class User < ApplicationRecord
     has_many :like_tweets, through: :likes, source: :tweet
 
     # バリデーション
-    with_options presence: true do
-        validates :name
-        validates :email
-    end
-    validates :email, uniqueness: true
+    # with_options presence: true do
+    #     validates :name
+    #     validates :email
+    # end
+    # validates :email, uniqueness: true
 
     # コールバック
-    before_save do
-        self.name = self.name.capitalize # self->インスタンスを指している
-    end
+    # before_save do
+    #     self.name = self.name.capitalize # self->インスタンスを指している
+    # end
 
-    before_validation :add_user_length, if: :short_name?
+    # before_validation :add_user_length, if: :short_name?
 
-    def add_user_length
-        self.name = self.name + "hogehoge"
-    end
+    # def add_user_length
+    #     self.name = self.name + "hogehoge"
+    # end
 
-    def short_name?
-        self.name.length < 4
-    end
+    # def short_name?
+    #     self.name.length < 4
+    # end
 
     # インスタンスメソッド
     def like_tweet_tags
