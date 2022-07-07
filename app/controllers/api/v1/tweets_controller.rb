@@ -2,10 +2,7 @@ class Api::V1::TweetsController < ApplicationController
     before_action :set_tweet, only: [:update, :destroy, :like_users, :tags, :likes, :show]
 
     def index
-        user_id = 2
-        # like数を数えたものを追加
-        Tweet.serialize :liked_by_me
-        Tweet.serialize :like_count
+        user_id = 1 # 仮のauth_user
 
         tweets = Tweet.eager_load(:likes).order(id: :desc).each do |tweet|
             tweet.liked_by_me = tweet.likes { |like| like.user_id == user_id}.count > 0
@@ -15,10 +12,6 @@ class Api::V1::TweetsController < ApplicationController
     end
 
     def show
-        # like数を数えたものを追加
-        Tweet.serialize :liked_by_me
-        Tweet.serialize :like_count
-
         tweet = Tweet.eager_load(:likes).find(@tweet.id)
         tweet.liked_by_me = tweet.likes { |like| like.user_id == user_id}.count > 0
         tweet.like_count = tweet.likes.count
