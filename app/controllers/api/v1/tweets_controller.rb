@@ -1,5 +1,8 @@
 class Api::V1::TweetsController < ApplicationController
+    include ActionController::HttpAuthentication::Token::ControllerMethods
+    before_action :authenticate
     before_action :set_tweet, only: [:update, :destroy, :like_users, :tags, :likes, :show]
+    
 
 
 
@@ -59,5 +62,12 @@ class Api::V1::TweetsController < ApplicationController
 
     def tweet_params
         params.permit(:text, :user_id, :status)
+    end
+
+    def authenticate
+        authenticate_or_request_with_http_token do |token, options|
+            auth_user = User.find_by(token: token)
+            auth_user != nil ? true : false
+        end
     end
 end
