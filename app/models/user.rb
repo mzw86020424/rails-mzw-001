@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+    has_secure_token
     # アソシエーション
     has_many :tweets, dependent: :destroy
     has_many :likes, dependent: :destroy
@@ -8,6 +9,7 @@ class User < ApplicationRecord
     with_options presence: true do
         validates :name
         validates :email
+        validates :password
     end
     validates :email, uniqueness: true
 

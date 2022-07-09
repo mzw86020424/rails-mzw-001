@@ -1,6 +1,8 @@
 class Api::V1::TweetsController < ApplicationController
     before_action :set_tweet, only: [:update, :destroy, :like_users, :tags, :likes, :show]
 
+
+
     def index
         user_id = 1 # 仮のauth_user
 
@@ -50,7 +52,6 @@ class Api::V1::TweetsController < ApplicationController
     end
 
     private
-
     def set_tweet
         id = params[:tweet_id] || params[:id]
         @tweet = Tweet.find(id)

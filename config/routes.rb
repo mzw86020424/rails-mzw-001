@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
+  get 'login/login'
   namespace :api do
     namespace :v1 do
+      post 'login/login'
       resources :users do
         get 'tweets'
         get 'like_tweets'

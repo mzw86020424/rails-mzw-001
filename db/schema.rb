@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_07_01_064655) do
+ActiveRecord::Schema[7.0].define(version: 2022_07_08_071032) do
   create_table "likes", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "tweet_id", null: false
@@ -49,6 +49,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_01_064655) do
     t.string "email"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "password"
+    t.string "token"
+    t.index ["token"], name: "index_users_on_token", unique: true
   end
 
   add_foreign_key "likes", "tweets"
