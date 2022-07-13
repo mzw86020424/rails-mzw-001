@@ -2,25 +2,15 @@ class Api::V1::TweetsController < ApplicationController
     include ActionController::HttpAuthentication::Token::ControllerMethods
     before_action :authenticate
     before_action :set_tweet, only: [:update, :destroy, :like_users, :tags, :likes, :show]
-    
-
-
 
     def index
-        user_id = 1 # 仮のauth_user
-
-        tweets = Tweet.eager_load(:likes).order(id: :desc).each do |tweet|
-            tweet.liked_by_me = tweet.likes { |like| like.user_id == user_id}.count > 0
-            tweet.like_count = tweet.likes.count
-        end
-        render json: tweets
+        my_id = @auth_user.id
+        render json: Tweet.tweets_with_my_like(my_id)
     end
 
     def show
-        tweet = Tweet.eager_load(:likes).find(@tweet.id)
-        tweet.liked_by_me = tweet.likes { |like| like.user_id == user_id}.count > 0
-        tweet.like_count = tweet.likes.count
-        render json: tweet
+        my_id = @auth_user.id
+        render json: Tweet.tweet_with_my_like(my_id)
     end
 
     def create
@@ -66,8 +56,8 @@ class Api::V1::TweetsController < ApplicationController
 
     def authenticate
         authenticate_or_request_with_http_token do |token, options|
-            auth_user = User.find_by(token: token)
-            auth_user != nil ? true : false
+            @auth_user = User.find_by(token: token)
+            @auth_user != nil ? true : false
         end
     end
 end
