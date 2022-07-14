@@ -1,7 +1,6 @@
 class Api::V1::TweetsController < ApplicationController
     include ActionController::HttpAuthentication::Token::ControllerMethods
     before_action :authenticate
-    before_action :set_tweet, only: [:update, :destroy, :like_users, :tags, :likes, :show]
 
     def index
         my_id = @auth_user.id
@@ -24,32 +23,31 @@ class Api::V1::TweetsController < ApplicationController
     end
 
     def update
-        if @tweet.update(text: params[:text])
-            render json: @tweet
+        tweet = Tweet.find(params[:id])
+        if tweet.update(text: params[:text])
+            render json: tweet
         else
-            render json: @tweet.errors
+            render json: tweet.errors
         end
     end
 
     def destroy
-        @tweet.destroy
-        render json: "tweet id:#{@tweet.id} is deleted"
-    end
+        tweet = Tweet.find(params[:id])
+        if tweet.destroy
+            render json: tweet
+        else
+            render json: tweet.errors
+        end
     
     def like_users
-        render json: @tweet.like_users
+        render json: Tweet.find(params[:id]).like_users
     end
 
     def tags
-        render json: @tweet.tags
+        render json: Tweet.find(params[:id]).tags
     end
 
     private
-    def set_tweet
-        id = params[:tweet_id] || params[:id]
-        @tweet = Tweet.find(id)
-    end
-
     def tweet_params
         params.permit(:text, :user_id, :status)
     end
