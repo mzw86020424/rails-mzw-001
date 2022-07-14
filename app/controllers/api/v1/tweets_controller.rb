@@ -4,12 +4,25 @@ class Api::V1::TweetsController < ApplicationController
 
     def index
         my_id = @auth_user.id
-        render json: Tweet.tweets_with_my_like(my_id)
+        tweets = Tweet.eager_load(:likes).order(id: :desc).limit(50) # ここではまだSQL発行されていない
+        #自分がいいねしたツイートIDだけを取得する
+        liked_tweets = Like.where(tweet_id: tweets, user_id: my_id).group_by(:tweet_id) # tweet_idにtweetsを渡してもactiverecordがidを拾ってくれる
+        #カウントを取得する
+        like_counts = Like.where(tweet_id: tweets).group(:tweet_id).count
+        # alba用のクラスに置き換える
+        view_models = tweets.map do |t|
+            TweetViewModel.new(t, liked_tweets.has_key?(t.id), like_counts[t.id])
+        end
+        render json: TweetViewModelResource.new(view_models)
     end
-
+    
     def show
         my_id = @auth_user.id
-        render json: Tweet.tweet_with_my_like(my_id)
+        tweet = Tweet.eager_load(:likes).find(params[:id])
+        liked_by_me = Like.exists?(tweet_id: tweet.id, user_id: my_id)
+        like_count = Like.where(tweet_id: tweet.id).count
+        view_model = TweetViewModel.new(tweet, liked_by_me, like_count)
+        render json: TweetViewModelResource.new(view_model)
     end
 
     def create
@@ -38,6 +51,7 @@ class Api::V1::TweetsController < ApplicationController
         else
             render json: tweet.errors
         end
+    end
     
     def like_users
         render json: Tweet.find(params[:id]).like_users
