@@ -6,7 +6,7 @@ class Api::V1::TweetsController < ApplicationController
         my_id = @auth_user.id
         tweets = Tweet.eager_load(:likes).order(id: :desc).limit(50) # ここではまだSQL発行されていない
         #自分がいいねしたツイートIDだけを取得する
-        liked_tweets = Like.where(tweet_id: tweets, user_id: my_id).group_by(:tweet_id) # tweet_idにtweetsを渡してもactiverecordがidを拾ってくれる
+        liked_tweets = Like.where(tweet_id: tweets, user_id: my_id).group_by(&:tweet_id) # tweet_idにtweetsを渡してもActiveRecordがidを拾ってくれる
         #カウントを取得する
         like_counts = Like.where(tweet_id: tweets).group(:tweet_id).count
         # alba用のクラスに置き換える
