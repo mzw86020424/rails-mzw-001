@@ -5,6 +5,15 @@ class User < ApplicationRecord
     has_many :likes, dependent: :destroy
     has_many :like_tweets, through: :likes, source: :tweet
 
+    # 自分がフォローしているユーザーとの関係
+    has_many :active_relationships, class_name: "Relationship", foreign_key: :followee_id
+    # 中間テーブルを通じて自分がフォローしているユーザーを持つ
+    has_many :followees, through: :active_relationships, source: :followee, dependent: :destroy
+    # 自分がフォローされているユーザーとの関係
+    has_many :passive_relationships, class_name: "Relationship", foreign_key: :follower_id
+    # 中間テーブルを通じて自分がフォローされているユーザーを持つ
+    has_many :followers, thorough: :passive_relationships, source: :follower, dependent: :destroy
+
     # バリデーション
     with_options presence: true do
         validates :name

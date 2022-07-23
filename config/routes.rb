@@ -9,6 +9,10 @@ Rails.application.routes.draw do
         get 'like_tweet_tags'
         # 明示してルーティングできるし、明示しないと自動でルーティング作られる。パラメータも明示可能
         get 'status_tweets/:status', to: 'users#status_tweets'
+
+        resource :relationships, only: [:create, :destroy]
+        get :follows, on: :member
+        get :followers, on: :member
       end
       resources :tweets do
         get 'like_users'
