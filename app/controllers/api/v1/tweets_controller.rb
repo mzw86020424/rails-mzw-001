@@ -9,9 +9,11 @@ class Api::V1::TweetsController < ApplicationController
         liked_tweets = Like.where(tweet_id: tweets, user_id: my_id).group_by(&:tweet_id) # tweet_idにtweetsを渡してもActiveRecordがidを拾ってくれる
         #カウントを取得する
         like_counts = Like.where(tweet_id: tweets).group(:tweet_id).count
+        # フォローしているユーザーのidを取得する
+        following_user_ids = User.eager_load(:active_relationships).where(active_relationships:{follower_id: my_id}).pluck("active_relationships.followee_id")
         # alba用のクラスに置き換える
         view_models = tweets.map do |t|
-            TweetViewModel.new(t, liked_tweets.has_key?(t.id), like_counts[t.id])
+            TweetViewModel.new(t, liked_tweets.has_key?(t.id), like_counts[t.id], following_user_ids.include?(t.user_id))
         end
         render json: TweetViewModelResource.new(view_models)
     end
@@ -26,7 +28,6 @@ class Api::V1::TweetsController < ApplicationController
     end
 
     def create
-        user = User.find(params[:user_id])
         tweet = Tweet.new(tweet_params)
         if tweet.save
             render json: tweet
