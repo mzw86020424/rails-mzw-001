@@ -1,9 +1,6 @@
 class Tweet < ApplicationRecord
   include Visible
 
-  attribute :liked_by_me, :boolean
-  attribute :like_count, :integer
-
   belongs_to :user
   has_many :likes, dependent: :destroy
   has_many :like_users, through: :likes, source: :user
@@ -14,4 +11,5 @@ class Tweet < ApplicationRecord
     validates :text
     validates :user_id
   end
+
 end
