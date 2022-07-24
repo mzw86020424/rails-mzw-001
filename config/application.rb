@@ -24,7 +24,7 @@ module Myapp
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
 
-    # resourcesを読み込む
-    config.autoload_paths << "#{root}/models/resources"
+    # view_modelsを読み込む
+    config.autoload_paths << "#{root}/view_models"
   end
 end
