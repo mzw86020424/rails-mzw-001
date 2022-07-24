@@ -1,7 +1,10 @@
 class Api::V1::UsersController < ApplicationController
     include ActionController::HttpAuthentication::Token::ControllerMethods
-    before_action :authenticate, except: [:create]
-    before_action :set_user, except: [:create]
+    before_action :authenticate, except: [:index, :create]
+
+    def index
+        render json: User.all
+    end
 
     def create
         user = User.new(user_params)
@@ -13,14 +16,13 @@ class Api::V1::UsersController < ApplicationController
     end
 
     def update
-        @user.update!(user_params)
-        render json: @user
+        @auth_user.update!(user_params)
+        render json: @auth_user
     end
 
     def destroy
-        user = User.all.eager_load(tweets: :tweet_tags).find(@user.id)
-        user.destroy
-        render json: @user
+        @auth_user.destroy
+        render json: @auth_user
     end
 
     private
@@ -31,8 +33,8 @@ class Api::V1::UsersController < ApplicationController
 
     def authenticate
         authenticate_or_request_with_http_token do |token, options|
-            auth_user = User.find_by(token: token)
-            auth_user != nil ? true : false
+            @auth_user = User.find_by(token: token)
+            @auth_user != nil ? true : false
         end
     end
 end
