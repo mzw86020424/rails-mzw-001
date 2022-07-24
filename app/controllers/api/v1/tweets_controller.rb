@@ -53,14 +53,6 @@ class Api::V1::TweetsController < ApplicationController
             render json: tweet.errors
         end
     end
-    
-    def like_users
-        render json: Tweet.find(params[:id]).like_users
-    end
-
-    def tags
-        render json: Tweet.find(params[:id]).tags
-    end
 
     private
     def tweet_params
