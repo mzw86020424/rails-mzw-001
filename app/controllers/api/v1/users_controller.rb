@@ -6,9 +6,10 @@ class Api::V1::UsersController < ApplicationController
         users = User.eager_load(:active_relationships, :passive_relationships)
         follower_ids = users.where(passive_relationships: {followee_id: @auth_user.id}).pluck("passive_relationships.follower_id")
         followee_ids = users.where(active_relationships: {follower_id: @auth_user.id}).pluck("active_relationships.followee_id")
+        tweet_counts = Tweet.group(:user_id).count
 
         view_models = users.map do |u|
-            UserViewModel.new(u, follower_ids.include?(u.id), followee_ids.include?(u.id))
+            UserViewModel.new(u, follower_ids.include?(u.id), followee_ids.include?(u.id), u.followers.size, u.followees.size, u.tweets.size)
         end
 
         render json: UserViewModelResource.new(view_models)
