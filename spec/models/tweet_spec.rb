@@ -1,21 +1,17 @@
 require 'rails_helper'
 
 RSpec.describe Tweet, type: :model do
-  # pending "add some examples to (or delete) #{__FILE__}"
   describe '#create' do
-    context 'without text' do
-      it "false" do
-        expect(Tweet.new(user_id: 1, status: "private").valid?).to eq false 
-      end
-    end
-    context 'without user_id' do
-      it "false" do
-        expect(Tweet.new(text: "qqq", status: "private").valid?).to eq false 
-      end
-    end
-    context 'without status' do
-      it "false" do
-        expect(Tweet.new(text: "qqq", user_id: 1).valid?).to eq false 
+    let(:user) { User.create(
+      name: Faker::Name.first_name,
+      email: Faker::Internet.email,
+      password: "password",
+      token: "token",
+      ) } 
+    context "without nothing" do
+      it "true" do
+        t = Tweet.new(text: "hoge", user_id: user.id)
+        expect(t.save!).to eq true
       end
     end
   end
