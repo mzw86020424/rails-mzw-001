@@ -3,7 +3,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       post 'login/login'
-      resources :users, only: [:create, :index, :update, :destroy] do
+      resources :users do
         resource :relationships, only: [:create, :destroy]
         get :follows, on: :member
         get :followers, on: :member

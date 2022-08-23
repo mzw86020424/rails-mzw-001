@@ -15,6 +15,25 @@ class Api::V1::UsersController < ApplicationController
         render json: UserViewModelResource.new(view_models)
     end
 
+    def show
+        my_id = @auth_user.id
+
+        user_view_model = UserViewModel.new(
+            user = User.find(params[:id]),
+            follows_me = user.follower_ids.include?(my_id),
+            followed_by_me = user.followee_ids.include?(my_id),
+            follower_count = user.followers.count,
+            followee_count = user.followees.count,
+            tweet_count = user.tweets.count
+        )
+
+        if user
+            render json: user_view_model
+        else
+            render json: user.errors
+        end
+    end
+
     def create
         user = User.new(user_params)
         if user.save
