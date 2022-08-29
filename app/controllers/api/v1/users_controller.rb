@@ -4,8 +4,8 @@ class Api::V1::UsersController < ApplicationController
 
     def index
         users = User.eager_load(:active_relationships, :passive_relationships)
-        follower_ids = users.where(passive_relationships: {followee_id: @auth_user.id}).pluck("passive_relationships.follower_id")
-        followee_ids = users.where(active_relationships: {follower_id: @auth_user.id}).pluck("active_relationships.followee_id")
+        follower_ids = users.where(passive_relationships: {followee_id: @auth_user.id}).pluck("passive_relationships.followee_id")
+        followee_ids = users.where(active_relationships: {follower_id: @auth_user.id}).pluck("active_relationships.follower_id")
         tweet_counts = Tweet.group(:user_id).count
 
         view_models = users.map do |u|
@@ -20,15 +20,15 @@ class Api::V1::UsersController < ApplicationController
 
         user_view_model = UserViewModel.new(
             user = User.find(params[:id]),
-            follows_me = user.follower_ids.include?(my_id),
-            followed_by_me = user.followee_ids.include?(my_id),
+            follows_me = user.followee_ids.include?(my_id),
+            followed_by_me = user.follower_ids.include?(my_id),
             follower_count = user.followers.count,
             followee_count = user.followees.count,
             tweet_count = user.tweets.count
         )
 
         if user
-            render json: user_view_model
+            render json: UserViewModelResource.new(user_view_model)
         else
             render json: user.errors
         end
